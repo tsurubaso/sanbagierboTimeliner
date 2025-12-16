@@ -1,0 +1,14 @@
+[
+  {
+    "id": "e1",
+    "title": "Révolution fictive",
+    "startDate": "1968-01-01",
+    "endDate": "1970-01-01"
+  },
+  {
+    "id": "e2",
+    "title": "Accord historique",
+    "startDate": "1989-11-09",
+    "endDate": null
+  }
+]

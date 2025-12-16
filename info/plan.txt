@@ -1,0 +1,13 @@
+Data shower:
+
+Les objectifs:
+Plan de l'application
+
+-nettoyer l'appli de tout ce qui est Covid /done
+-Créer une nouvelle database pas Covid related /done
+-changer la langue de default de vis /done
+-Voir quels sont les autres options
+-lire le manuel
+
+
+
