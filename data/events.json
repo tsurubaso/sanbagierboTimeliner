@@ -2,13 +2,20 @@
   {
     "id": "e1",
     "title": "Révolution fictive",
+    "type": "REVOLUTION",
     "startDate": "1968-01-01",
-    "endDate": "1970-01-01"
+    "endDate": "1970-01-01",
+    "summary": "Major political uprising affecting the country",
+    "storyIds": ["s1"],
+    "documentIds": ["d1", "d2"]
   },
   {
     "id": "e2",
     "title": "Accord historique",
+    "type": "TREATY",
     "startDate": "1989-11-09",
-    "endDate": null
+    "endDate": null,
+    "summary": "Agreement marking the end of a conflict",
+    "storyIds": ["s1"]
   }
 ]

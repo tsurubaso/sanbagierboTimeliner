@@ -3,12 +3,17 @@
     "id": "p1",
     "name": "Jean Dupont",
     "birthDate": "1950-01-01",
-    "deathDate": "2000-05-12"
+    "deathDate": "2000-05-12",
+    "summary": "Worker involved in major political movements",
+    "storyIds": ["s1", "s2"],
+    "documentIds": ["d100"]
   },
   {
     "id": "p2",
     "name": "Marie Lefèvre",
     "birthDate": "1975-03-22",
-    "deathDate": null
+    "deathDate": null,
+    "summary": "Journalist covering post-war Europe",
+    "storyIds": ["s2"]
   }
 ]

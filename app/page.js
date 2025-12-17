@@ -31,6 +31,11 @@ export default function HomePage() {
               Example Event
             </Link>
           </li>
+          <li>
+            <Link  href="/document/d1" className="underline">
+              Example Documents
+            </Link>
+          </li>
         </ul>
       </nav>
     </main>

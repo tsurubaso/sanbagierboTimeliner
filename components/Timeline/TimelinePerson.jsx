@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react"
 import { Timeline } from "vis-timeline/standalone"
 import "vis-timeline/styles/vis-timeline-graph2d.css"
 
-export default function TimelinePerson({ person, events }) {
+export default function TimelinePerson({ person, events, moments }) {
   const containerRef = useRef(null)
 
   useEffect(() => {
@@ -26,7 +26,17 @@ export default function TimelinePerson({ person, events }) {
       group: "life"
     })
 
-    // Events filtered
+    // Moments (pins)
+    moments.forEach((m) => {
+      items.push({
+        id: m.id,
+        content: m.label,
+        start: m.date,
+        group: "life"
+      })
+    })
+
+    // Events
     events.forEach((e) => {
       items.push({
         id: e.id,
@@ -48,7 +58,7 @@ export default function TimelinePerson({ person, events }) {
     )
 
     return () => timeline.destroy()
-  }, [person, events])
+  }, [person, events, moments])
 
   return (
     <div

@@ -1,0 +1,29 @@
+[
+  {
+    "id": "m1",
+    "personId": "p1",
+    "type": "BIRTH",
+    "date": "1950-01-01",
+    "label": "Born in Paris",
+    "storyIds": ["s1"],
+    "documentIds": ["d10"]
+  },
+  {
+    "id": "m2",
+    "personId": "p1",
+    "type": "MARRIAGE",
+    "date": "1975-06-20",
+    "label": "Marriage with Anne",
+    "relatedEventIds": ["e1"],
+    "storyIds": ["s1"]
+  },
+  {
+    "id": "m3",
+    "personId": "p1",
+    "type": "ACCIDENT",
+    "date": "1982-09-12",
+    "label": "Serious car accident",
+    "relatedEventIds": ["e2"],
+    "storyIds": ["s2"]
+  }
+]

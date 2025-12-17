@@ -1,17 +1,15 @@
 import persons from "@/data/persons.json"
 import events from "@/data/events.json"
+import moments from "@/data/moments.json"
 import TimelinePerson from "@/components/Timeline/TimelinePerson"
 
 export default async function PersonPage({ params }) {
-  let {id}=await params
-  const person = persons.find((p) => p.id === id)
 
+    let {id}=await params
+  const person = persons.find((p) => p.id === id)
+ 
   if (!person) {
-    return (
-      <div className="p-4">
-        <h1>Person not found</h1>
-      </div>
-    )
+    return <div className="p-4">Person not found</div>
   }
 
   const birth = new Date(person.birthDate)
@@ -21,6 +19,10 @@ export default async function PersonPage({ params }) {
     const eventStart = new Date(e.startDate)
     return eventStart >= birth && eventStart <= death
   })
+
+  const relatedMoments = moments.filter(
+    (m) => m.personId === person.id
+  )
 
   return (
     <div className="p-6 space-y-6">
@@ -33,24 +35,18 @@ export default async function PersonPage({ params }) {
       <TimelinePerson
         person={person}
         events={relatedEvents}
+        moments={relatedMoments}
       />
 
       <section>
-        <h2 className="text-lg font-semibold">Related Events</h2>
-
-        {relatedEvents.length === 0 ? (
-          <p>No related events.</p>
-        ) : (
-          <ul className="list-disc list-inside">
-            {relatedEvents.map((e) => (
-              <li key={e.id}>
-                <a href={`/events/${e.id}`} className="underline">
-                  {e.title}
-                </a>
-              </li>
-            ))}
-          </ul>
-        )}
+        <h2 className="text-lg font-semibold">Moments</h2>
+        <ul className="list-disc list-inside">
+          {relatedMoments.map((m) => (
+            <li key={m.id}>
+              {m.date} — {m.label}
+            </li>
+          ))}
+        </ul>
       </section>
     </div>
   )
