@@ -1,24 +1,22 @@
 
-  [{
-  "id": "d1",
-  "display": "EMBED",
-  "url": "https://pin.it/4UprJqXMC",
-  "title": "Wedding photo",
-  "description": "Jean and Anne wedding day",
-  "storyIds": ["s1"],
-  "linkedTo": {
-    "moments": ["m2"]
-  }
-},
-{
-  "id": "d2",
-  "display": "LINK",
-  "url": "https://www.lemonde.fr/politique/article/2025/12/17/municipales-a-paris-vers-un-accord-historique-de-premier-tour-entre-socialistes-communistes-et-ecologistes_6658311_823448.html",
-  "title": "Marriage announcement",
-  "description": "Local newspaper article",
-  "storyIds": ["s1"],
-  "linkedTo": {
-    "moments": ["m2"]
-  }
 
-}]
+[
+  {
+    "id": "d1",
+    "title": "Old Photograph",
+     "display": "EMBED",
+    "url": "/image1.jpg",
+    "description": "A photograph illustrating the historical context.",
+    "personIds": ["p1"],
+    "eventIds": ["e1"]
+  },
+  {
+    "id": "d2",
+    "title": "Battle Scene",
+    "display": "LINK",
+    "url": "/image2.jpg",
+    "description": "An artistic depiction of a key moment.",
+    "personIds": [],
+    "eventIds": ["e1"]
+  }
+]

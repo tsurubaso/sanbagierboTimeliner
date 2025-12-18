@@ -51,7 +51,7 @@ export default function Page() {
               </select>
 
               <input
-                className="border p-2 w-full"
+            className="border p-2 w-full"
                 placeholder="Tags (portrait, press, archive)"
               />
             </div>
