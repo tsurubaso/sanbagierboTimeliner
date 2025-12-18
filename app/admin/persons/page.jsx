@@ -1,9 +1,35 @@
-import Link from "next/link";
+"use client"
+
+import Link from "next/link"
+import { useEffect, useState } from "react"
 
 export default function Page() {
+  const [persons, setPersons] = useState([])
+
+  // fetch persons depuis l'API
+  const fetchPersons = async () => {
+    const res = await fetch("/api/persons")
+    const data = await res.json()
+    setPersons(data)
+  }
+
+  useEffect(() => {
+    fetchPersons()
+  }, [])
+
+  // delete person
+  const handleDelete = async (id) => {
+    if (!confirm("Delete this person?")) return
+    await fetch("/api/persons", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    })
+    fetchPersons()
+  }
+
   return (
     <main className="max-w-4xl mx-auto p-6 space-y-8">
-
       {/* Header */}
       <header className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Persons</h1>
@@ -18,43 +44,32 @@ export default function Page() {
 
       {/* List */}
       <section className="border rounded divide-y">
+        {persons.map((p) => (
+          <div key={p.id} className="p-4 flex justify-between items-center">
+            <div>
+              <p className="font-medium">{p.name}</p>
+              <p className="text-sm text-gray-500">
+                {p.birthDate} → {p.deathDate ?? "—"}
+              </p>
+            </div>
 
-        {/* Person row */}
-        <div className="p-4 flex justify-between items-center">
-          <div>
-            <p className="font-medium">Jean Dupont</p>
-            <p className="text-sm text-gray-500">
-              1950-01-01 → 2000-05-12
-            </p>
+            <div className="space-x-4">
+              <Link
+                href={`/admin/persons/${p.id}`}
+                className="text-sm underline"
+              >
+                Edit
+              </Link>
+              <button
+                onClick={() => handleDelete(p.id)}
+                className="text-sm text-red-600 underline"
+              >
+                Delete
+              </button>
+            </div>
           </div>
-
-          <Link
-            href="/admin/persons/p1"
-            className="text-sm underline"
-          >
-            Edit
-          </Link>
-        </div>
-
-        {/* Person row */}
-        <div className="p-4 flex justify-between items-center">
-          <div>
-            <p className="font-medium">Marie Lefèvre</p>
-            <p className="text-sm text-gray-500">
-              1975-03-22 → —
-            </p>
-          </div>
-
-          <Link
-            href="/admin/persons/p2"
-            className="text-sm underline"
-          >
-            Edit
-          </Link>
-        </div>
-
+        ))}
       </section>
-
     </main>
-  );
+  )
 }

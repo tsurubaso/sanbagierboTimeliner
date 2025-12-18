@@ -1,24 +1,23 @@
-import documents from "@/data/document.json";
-import persons from "@/data/persons.json";
-import events from "@/data/events.json";
+import {
+  getDocumentById,
+  getPersonsForDocument,
+  getEventsForDocument,
+} from "@/lib/documents";
+
 import Link from "next/link";
 
 export default async function DocumentPage({ params }) {
   let { id } = await params;
-  
 
-  const document = await documents.find((d) => d.id === id);
-  console.log(document.url);
+  const document = getDocumentById(id);
 
   if (!document) {
     return <div className="p-4">Document not found</div>;
   }
 
-  const relatedPersons = persons.filter((p) =>
-    document.personIds.includes(p.id)
-  );
+  const relatedPersons = getPersonsForDocument(id);
 
-  const relatedEvents = events.filter((e) => document.eventIds.includes(e.id));
+  const relatedEvents = getEventsForDocument(id);
 
   return (
     <div className="p-6 space-y-6">
@@ -48,40 +47,39 @@ export default async function DocumentPage({ params }) {
         </div>
       )}
 
-      {/* DESCRIPTION */}
-      <p>{document.description}</p>
+<h1 className="text-2xl font-bold">{document.title}</h1>
 
-      {/* RELATED PERSONS */}
-      {relatedPersons.length > 0 && (
-        <section>
-          <h2 className="font-semibold">Related Persons</h2>
-          <ul className="list-disc list-inside">
-            {relatedPersons.map((p) => (
-              <li key={p.id}>
-                <Link href={`/persons/${p.id}`} className="underline">
-                  {p.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
+<p>{document.description}</p>
 
-      {/* RELATED EVENTS */}
-      {relatedEvents.length > 0 && (
-        <section>
-          <h2 className="font-semibold">Related Events</h2>
-          <ul className="list-disc list-inside">
-            {relatedEvents.map((e) => (
-              <li key={e.id}>
-                <Link href={`/events/${e.id}`} className="underline">
-                  {e.title}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-      )}
+{document.display === "EMBED" && (
+  <img src={document.url} alt={document.title} className="w-full max-h-96 object-cover mt-4" />
+)}
+
+<section className="mt-6">
+  <h2 className="text-lg font-semibold">Related Persons</h2>
+  {relatedPersons.length === 0 ? <p>None</p> : (
+    <ul className="list-disc list-inside">
+      {relatedPersons.map(p => (
+        <li key={p.id}>
+          <Link href={`/persons/${p.id}`} className="underline">{p.name}</Link>
+        </li>
+      ))}
+    </ul>
+  )}
+</section>
+
+<section className="mt-6">
+  <h2 className="text-lg font-semibold">Related Events</h2>
+  {relatedEvents.length === 0 ? <p>None</p> : (
+    <ul className="list-disc list-inside">
+      {relatedEvents.map(e => (
+        <li key={e.id}>
+          <Link href={`/events/${e.id}`} className="underline">{e.title}</Link>
+        </li>
+      ))}
+    </ul>
+  )}
+</section>
     </div>
   );
 }

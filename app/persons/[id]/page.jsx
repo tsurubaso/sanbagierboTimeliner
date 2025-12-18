@@ -1,18 +1,18 @@
-import persons from "@/data/persons.json";
-import events from "@/data/events.json";
-import moments from "@/data/moments.json";
-import TimelinePerson from "@/components/Timeline/TimelinePerson";
+import {
+  getPersonById,
+  getEventsForPerson,
+  getMomentsForPerson,
+  getDocumentsForPerson,
+} from "@/lib/persons";
 
-import documents from "@/data/document.json";
+import TimelinePerson from "@/components/Timeline/TimelinePerson";
 import Link from "next/link";
 
 export default async function PersonPage({ params }) {
   let { id } = await params;
-  const person = persons.find((p) => p.id === id);
+  const person = getPersonById(id);
 
-  const relatedDocuments = await documents.filter((d) =>
-    d.personIds.includes(person.id)
-  );
+  const relatedDocuments = getDocumentsForPerson(person.id);
 
   if (!person) {
     return <div className="p-4">Person not found</div>;
@@ -21,12 +21,9 @@ export default async function PersonPage({ params }) {
   const birth = new Date(person.birthDate);
   const death = person.deathDate ? new Date(person.deathDate) : new Date();
 
-  const relatedEvents = events.filter((e) => {
-    const eventStart = new Date(e.startDate);
-    return eventStart >= birth && eventStart <= death;
-  });
+  const relatedEvents = getEventsForPerson(person);
 
-  const relatedMoments = moments.filter((m) => m.personId === person.id);
+  const relatedMoments = getMomentsForPerson(person.id);
 
   return (
     <div className="p-6 space-y-6">
@@ -54,15 +51,15 @@ export default async function PersonPage({ params }) {
       </section>
 
       {relatedDocuments.length > 0 && (
-        <section className="space-y-2">
+        <section>
           <h2 className="text-lg font-semibold">Documents</h2>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {relatedDocuments.map((doc) => (
               <Link
                 key={doc.id}
-                href={`/document/${doc.id}`}
-                className="block border p-2 hover:bg-gray-50"
+                href={`/documents/${doc.id}`}
+                className="block border p-2"
               >
                 {doc.display === "EMBED" && (
                   <img
@@ -74,7 +71,9 @@ export default async function PersonPage({ params }) {
 
                 <h3 className="mt-2 text-sm font-semibold">{doc.title}</h3>
 
-                <p className="text-xs text-gray-600">{doc.description}</p>
+                {person.summary && (
+                  <p className="text-gray-700 max-w-prose">{person.summary}</p>
+                )}
               </Link>
             ))}
           </div>

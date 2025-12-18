@@ -1,9 +1,59 @@
-export default function EditPersonPage({ params }) {
-  const { id } = params;
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
+
+export default function EditPersonPage() {
+  const { id } = useParams();
+  const router = useRouter();
+
+  const [name, setName] = useState("");
+  const [birthDate, setBirthDate] = useState("");
+  const [deathDate, setDeathDate] = useState("");
+  const [summary, setSummary] = useState("");
+
+  useEffect(() => {
+    fetch(`/api/persons?id=${id}`)
+      .then((r) => r.json())
+      .then((p) => {
+        setName(p.name ?? "");
+        setBirthDate(p.birthDate ?? "");
+        setDeathDate(p.deathDate ?? "");
+        setSummary(p.summary ?? "");
+      });
+  }, [id]);
+
+  const handleSave = async () => {
+    await fetch("/api/persons", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id,
+        name,
+        birthDate,
+        deathDate: deathDate || null,
+        summary,
+      }),
+    });
+
+    router.push("/admin/persons");
+  };
+
+  const handleDelete = async () => {
+    if (!confirm("Delete this person?")) return;
+
+    await fetch("/api/persons", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    });
+
+    router.push("/admin/persons");
+  };
 
   return (
     <main className="max-w-4xl mx-auto p-6 space-y-12">
-
       {/* Header */}
       <header className="space-y-1">
         <h1 className="text-2xl font-bold">Edit Person</h1>
@@ -12,23 +62,15 @@ export default function EditPersonPage({ params }) {
         </p>
       </header>
 
-      {/* ========================= */}
-      {/* Person form */}
-      {/* ========================= */}
       <form className="space-y-10">
-
         {/* Identity */}
         <section className="space-y-4">
           <h2 className="text-lg font-semibold">Identity</h2>
-
-          <div>
-            <label className="block text-sm font-medium">Name</label>
-            <input
-              type="text"
-              className="w-full border rounded px-3 py-2"
-              placeholder="Jean Dupont"
-            />
-          </div>
+          <input
+            className="w-full border rounded px-3 py-2"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
         </section>
 
         {/* Dates */}
@@ -36,112 +78,55 @@ export default function EditPersonPage({ params }) {
           <h2 className="text-lg font-semibold">Life dates</h2>
 
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium">Birth date</label>
-              <input
-                type="date"
-                className="w-full border rounded px-3 py-2"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium">Death date</label>
-              <input
-                type="date"
-                className="w-full border rounded px-3 py-2"
-              />
-            </div>
+            <input
+              type="date"
+              className="border rounded px-3 py-2"
+              value={birthDate|| ""}
+              onChange={(e) => setBirthDate(e.target.value)}
+            />
+            <input
+              type="date"
+              className="border rounded px-3 py-2"
+              value={deathDate|| ""}
+              onChange={(e) => setDeathDate(e.target.value)}
+            />
           </div>
         </section>
 
         {/* Summary */}
         <section className="space-y-4">
           <h2 className="text-lg font-semibold">Summary</h2>
-
           <textarea
             rows={4}
             className="w-full border rounded px-3 py-2"
-            placeholder="Short description of the person"
+            value={summary}
+            onChange={(e) => setSummary(e.target.value)}
           />
-        </section>
-
-        {/* Stories */}
-        <section className="space-y-4">
-          <h2 className="text-lg font-semibold">Stories</h2>
-
-          <div className="space-y-2">
-            <label className="flex items-center gap-2">
-              <input type="checkbox" />
-              <span>Story s1</span>
-            </label>
-
-            <label className="flex items-center gap-2">
-              <input type="checkbox" />
-              <span>Story s2</span>
-            </label>
-          </div>
         </section>
       </form>
 
-      {/* ========================= */}
-      {/* Moments (read-only) */}
-      {/* ========================= */}
-      <section className="space-y-4">
-        <h2 className="text-lg font-semibold">Moments</h2>
-
-        <div className="border rounded divide-y">
-          <div className="p-3 flex justify-between text-sm">
-            <span>🎂 BIRTH — 1950-01-01</span>
-            <span className="text-gray-500">Born in Paris</span>
-          </div>
-
-          <div className="p-3 flex justify-between text-sm">
-            <span>💍 MARRIAGE — 1975-06-20</span>
-            <span className="text-gray-500">Marriage with Anne</span>
-          </div>
-        </div>
-
-        <button className="text-sm underline">
-          + Add moment
-        </button>
-      </section>
-
-      {/* ========================= */}
-      {/* Documents (read-only) */}
-      {/* ========================= */}
-      <section className="space-y-4">
-        <h2 className="text-lg font-semibold">Documents</h2>
-
-        <div className="border rounded divide-y">
-          <div className="p-3 text-sm">
-            📎 Wedding photo (EMBED)
-          </div>
-
-          <div className="p-3 text-sm">
-            🔗 Newspaper article (LINK)
-          </div>
-        </div>
-      </section>
-
-      {/* ========================= */}
       {/* Actions */}
-      {/* ========================= */}
       <section className="flex justify-between">
-        <button className="text-red-600 underline">
+        <button onClick={handleDelete} className="text-red-600 underline">
           Delete person
         </button>
 
         <div className="flex gap-4">
-          <button className="px-4 py-2 border rounded">
+          <button
+            onClick={() => router.push("/admin/persons")}
+            className="px-4 py-2 border rounded"
+          >
             Cancel
           </button>
 
-          <button className="px-4 py-2 bg-black text-white rounded">
+          <button
+            onClick={handleSave}
+            className="px-4 py-2 bg-black text-white rounded"
+          >
             Save changes
           </button>
         </div>
       </section>
-
     </main>
   );
 }
