@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useParams } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 
 export default function EditPersonPage() {
   const { id } = useParams();
   const router = useRouter();
+
+  const [loading, setLoading] = useState(true);
 
   const [name, setName] = useState("");
   const [birthDate, setBirthDate] = useState("");
@@ -14,15 +15,22 @@ export default function EditPersonPage() {
   const [summary, setSummary] = useState("");
 
   useEffect(() => {
+    if (!id) return;
+
     fetch(`/api/persons?id=${id}`)
       .then((r) => r.json())
       .then((p) => {
-        setName(p.name ?? "");
-        setBirthDate(p.birthDate ?? "");
-        setDeathDate(p.deathDate ?? "");
-        setSummary(p.summary ?? "");
+        setName(p?.name ?? "");
+        setBirthDate(p?.birthDate ?? "");
+        setDeathDate(p?.deathDate ?? "");
+        setSummary(p?.summary ?? "");
+        setLoading(false);
       });
   }, [id]);
+
+  if (loading) {
+    return <div className="p-6">Loading…</div>;
+  }
 
   const handleSave = async () => {
     await fetch("/api/persons", {
@@ -33,7 +41,7 @@ export default function EditPersonPage() {
         name,
         birthDate,
         deathDate: deathDate || null,
-        summary,
+        summary
       }),
     });
 
@@ -62,57 +70,60 @@ export default function EditPersonPage() {
         </p>
       </header>
 
-      <form className="space-y-10">
-        {/* Identity */}
-        <section className="space-y-4">
-          <h2 className="text-lg font-semibold">Identity</h2>
+      {/* Identity */}
+      <section className="space-y-4">
+        <h2 className="text-lg font-semibold">Identity</h2>
+        <input
+          className="w-full border rounded px-3 py-2"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+      </section>
+
+      {/* Dates */}
+      <section className="space-y-4">
+        <h2 className="text-lg font-semibold">Life dates</h2>
+
+        <div className="grid grid-cols-2 gap-4">
           <input
-            className="w-full border rounded px-3 py-2"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            type="date"
+            className="border rounded px-3 py-2"
+            value={birthDate}
+            onChange={(e) => setBirthDate(e.target.value)}
           />
-        </section>
-
-        {/* Dates */}
-        <section className="space-y-4">
-          <h2 className="text-lg font-semibold">Life dates</h2>
-
-          <div className="grid grid-cols-2 gap-4">
-            <input
-              type="date"
-              className="border rounded px-3 py-2"
-              value={birthDate|| ""}
-              onChange={(e) => setBirthDate(e.target.value)}
-            />
-            <input
-              type="date"
-              className="border rounded px-3 py-2"
-              value={deathDate|| ""}
-              onChange={(e) => setDeathDate(e.target.value)}
-            />
-          </div>
-        </section>
-
-        {/* Summary */}
-        <section className="space-y-4">
-          <h2 className="text-lg font-semibold">Summary</h2>
-          <textarea
-            rows={4}
-            className="w-full border rounded px-3 py-2"
-            value={summary}
-            onChange={(e) => setSummary(e.target.value)}
+          <input
+            type="date"
+            className="border rounded px-3 py-2"
+            value={deathDate}
+            onChange={(e) => setDeathDate(e.target.value)}
           />
-        </section>
-      </form>
+        </div>
+      </section>
+
+      {/* Summary */}
+      <section className="space-y-4">
+        <h2 className="text-lg font-semibold">Summary</h2>
+        <textarea
+          rows={4}
+          className="w-full border rounded px-3 py-2"
+          value={summary}
+          onChange={(e) => setSummary(e.target.value)}
+        />
+      </section>
 
       {/* Actions */}
       <section className="flex justify-between">
-        <button onClick={handleDelete} className="text-red-600 underline">
+        <button
+          type="button"
+          onClick={handleDelete}
+          className="text-red-600 underline"
+        >
           Delete person
         </button>
 
         <div className="flex gap-4">
           <button
+            type="button"
             onClick={() => router.push("/admin/persons")}
             className="px-4 py-2 border rounded"
           >
@@ -120,6 +131,7 @@ export default function EditPersonPage() {
           </button>
 
           <button
+            type="button"
             onClick={handleSave}
             className="px-4 py-2 bg-black text-white rounded"
           >
