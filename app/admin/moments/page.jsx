@@ -1,9 +1,36 @@
-import Link from "next/link";
+"use client"
+
+import Link from "next/link"
+import { useEffect, useState } from "react"
 
 export default function Page() {
-  return (
-    <main className="max-w-5xl mx-auto p-6 space-y-8">
+  const [moments, setMoments] = useState([])
 
+  // fetch moments depuis l'API
+  const fetchMoments = async () => {
+    const res = await fetch("/api/moments")
+    const data = await res.json()
+    setMoments(data)
+  }
+
+  useEffect(() => {
+    fetchMoments()
+  }, [])
+
+  // delete moment
+  const handleDelete = async (id) => {
+    if (!confirm("Delete this moment?")) return
+    await fetch("/api/moments", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id }),
+    })
+    fetchMoments()
+  }
+
+  return (
+    <main className="max-w-4xl mx-auto p-6 space-y-8">
+      {/* Header */}
       <header className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Moments</h1>
 
@@ -15,39 +42,34 @@ export default function Page() {
         </Link>
       </header>
 
+      {/* List */}
       <section className="border rounded divide-y">
+        {moments.map((p) => (
+          <div key={p.id} className="p-4 flex justify-between items-center">
+            <div>
+              <p className="font-medium">{p.personId}</p>
+              <p className="text-sm text-gray-500">
+                {p.date}  {p.label ?? "—"}
+              </p>
+            </div>
 
-        <div className="p-4 flex justify-between items-center">
-          <div>
-            <p className="font-medium">
-              Jean Dupont — BIRTH
-            </p>
-            <p className="text-sm text-gray-500">
-              1950-01-01 · Born in Paris
-            </p>
+            <div className="space-x-4">
+              <Link
+                href={`/admin/moments/${p.id}`}
+                className="text-sm underline"
+              >
+                Edit
+              </Link>
+              <button
+                onClick={() => handleDelete(p.id)}
+                className="text-sm text-red-600 underline"
+              >
+                Delete
+              </button>
+            </div>
           </div>
-
-          <Link href="/admin/moments/m1" className="text-sm underline">
-            Edit
-          </Link>
-        </div>
-
-        <div className="p-4 flex justify-between items-center">
-          <div>
-            <p className="font-medium">
-              Jean Dupont — MARRIAGE
-            </p>
-            <p className="text-sm text-gray-500">
-              1975-06-20 · Marriage with Anne
-            </p>
-          </div>
-
-          <Link href="/admin/moments/m2" className="text-sm underline">
-            Edit
-          </Link>
-        </div>
-
+        ))}
       </section>
     </main>
-  );
+  )
 }
