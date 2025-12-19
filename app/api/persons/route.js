@@ -1,9 +1,18 @@
 import { NextResponse } from "next/server"
 import { getAllPersons, createPerson, updatePerson, deletePerson } from "@/lib/admin/persons"
 
-export async function GET() {
-  const persons = getAllPersons()
-  return NextResponse.json(persons)
+export async function GET(request) {
+  const { searchParams } = new URL(request.url);
+  const id = searchParams.get("id");
+
+  const persons = getAllPersons();
+
+  if (id) {
+    const person = persons.find((p) => p.id === id);
+    return NextResponse.json(person ?? null);
+  }
+
+  return NextResponse.json(persons);
 }
 
 export async function POST(req) {

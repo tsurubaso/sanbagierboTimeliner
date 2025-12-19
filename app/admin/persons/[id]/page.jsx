@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 
-export default function EditPersonPage() {
-  const { id } = useParams();
+export default  function EditPersonPage() {
+  const { id } =  useParams();
   const router = useRouter();
 
   const [loading, setLoading] = useState(true);
@@ -14,19 +14,22 @@ export default function EditPersonPage() {
   const [deathDate, setDeathDate] = useState("");
   const [summary, setSummary] = useState("");
 
-  useEffect(() => {
-    if (!id) return;
+useEffect(() => {
+  if (!id) return;
 
-    fetch(`/api/persons?id=${id}`)
-      .then((r) => r.json())
-      .then((p) => {
-        setName(p?.name ?? "");
-        setBirthDate(p?.birthDate ?? "");
-        setDeathDate(p?.deathDate ?? "");
-        setSummary(p?.summary ?? "");
-        setLoading(false);
-      });
-  }, [id]);
+  fetch(`/api/persons?id=${id}`)
+    .then((r) => r.json())
+    .then((p) => {
+      if (!p) return;
+
+      setName(p.name ?? "");
+      setBirthDate(p.birthDate ?? "");
+      setDeathDate(p.deathDate ?? "");
+      setSummary(p.summary ?? "");
+      setLoading(false);
+    });
+}, [id]);
+
 
   if (loading) {
     return <div className="p-6">Loading…</div>;
