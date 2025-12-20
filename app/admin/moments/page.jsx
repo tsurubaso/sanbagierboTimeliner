@@ -15,22 +15,26 @@ export default function Page() {
   };
 
   // fetch persons depuis l'API
-  const fetchPersons = async () => {
-    const res = await fetch("/api/persons");
-    const data = await res.json();
+
+useEffect(() => {
+  const load = async () => {
+    const personsRes = await fetch("/api/persons");
+    const persons = await personsRes.json();
 
     const map = {};
-    data.forEach((p) => {
+    persons.forEach((p) => {
       map[p.id] = p.name;
     });
-
     setPersonsMap(map);
+
+    const momentsRes = await fetch("/api/moments");
+    const moments = await momentsRes.json();
+    setMoments(moments);
   };
 
-  useEffect(() => {
-    fetchPersons();
-    fetchMoments();
-  }, []);
+  load();
+}, []);
+
 
   // delete moment
   const handleDelete = async (id) => {
