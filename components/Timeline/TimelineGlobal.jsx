@@ -1,40 +1,39 @@
-"use client"
+"use client";
 
-import { useEffect, useRef } from "react"
-import { useRouter } from "next/navigation"
-import { Timeline } from "vis-timeline/standalone"
-import "vis-timeline/styles/vis-timeline-graph2d.css"
+import { useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { Timeline } from "vis-timeline/standalone";
+import "vis-timeline/styles/vis-timeline-graph2d.css";
 
-import persons from "@/data/persons.json"
-import events from "@/data/events.json"
-
-export default function TimelineGlobal() {
-  const containerRef = useRef(null)
-  const router = useRouter()
+export default function TimelineGlobal({ persons, events }) {
+  const containerRef = useRef(null);
+  const router = useRouter();
 
   useEffect(() => {
-    if (!containerRef.current) return
+    if (!containerRef.current) return;
 
+    /* GROUPS */
     const groups = [
       { id: "events", content: "🌍 Events" },
       ...persons.map((p) => ({
         id: p.id,
-        content: p.name
-      }))
-    ]
+        content: p.name,
+      })),
+    ];
 
-    const items = []
+    /* ITEMS */
+    const items = [];
 
-    // Persons (life spans)
+    // Persons lifespan
     persons.forEach((p) => {
       items.push({
         id: `life-${p.id}`,
         content: p.name,
         start: p.birthDate,
         end: p.deathDate || new Date(),
-        group: p.id
-      })
-    })
+        group: p.id,
+      });
+    });
 
     // Events
     events.forEach((e) => {
@@ -43,43 +42,29 @@ export default function TimelineGlobal() {
         content: e.title,
         start: e.startDate,
         end: e.endDate || undefined,
-        group: "events"
-      })
-    })
+        group: "events",
+      });
+    });
 
-    const timeline = new Timeline(
-      containerRef.current,
-      items,
-      groups,
-      {
-        stack: false,
-        showCurrentTime: true
-      }
-    )
+    const timeline = new Timeline(containerRef.current, items, groups, {
+      stack: false,
+      showCurrentTime: true,
+    });
 
-    // 🖱️ CLICK HANDLER
+    // CLICK HANDLER
     timeline.on("select", (props) => {
-      const itemId = props.items[0]
-      if (!itemId) return
+      const itemId = props.items[0];
+      if (!itemId) return;
 
-      // Person
       if (itemId.startsWith("life-")) {
-        const personId = itemId.replace("life-", "")
-        router.push(`/persons/${personId}`)
-        return
+        router.push(`/persons/${itemId.replace("life-", "")}`);
+      } else {
+        router.push(`/events/${itemId}`);
       }
+    });
 
-      // Event
-      router.push(`/events/${itemId}`)
-    })
+    return () => timeline.destroy();
+  }, [persons, events, router]);
 
-    return () => timeline.destroy()
-  }, [router])
-
-  return (
-    <div
-      ref={containerRef}
-      className="w-full h-[500px] border"
-    />
-  )
+  return <div ref={containerRef} className="w-full h-[500px] border" />;
 }

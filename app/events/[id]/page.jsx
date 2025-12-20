@@ -1,18 +1,14 @@
-
-import documents from "@/data/document.json";
 import {
   getEventById,
-  getPersonsAliveDuringEvent,
-  getDocumentsForEvent
-} from "@/lib/events"
+  getPersonsAliveDuringEvent
+} from "@/lib/events";
 
 import Link from "next/link";
 
 export default async function EventPage({ params }) {
-  let { id } = await params;
-  const event = getEventById(id);
+  const { id } = await params;
 
-const relatedDocuments = getDocumentsForEvent(event.id);
+  const event = getEventById(id);
 
   if (!event) {
     return (
@@ -22,8 +18,7 @@ const relatedDocuments = getDocumentsForEvent(event.id);
     );
   }
 
-  // Persons vivantes pendant l'event
-  const relatedPersons = getPersonsAliveDuringEvent(event)
+  const relatedPersons = getPersonsAliveDuringEvent(event);
 
   return (
     <div className="p-6 space-y-4">
@@ -35,7 +30,9 @@ const relatedDocuments = getDocumentsForEvent(event.id);
       </p>
 
       <section>
-        <h2 className="text-lg font-semibold">People alive at this time</h2>
+        <h2 className="text-lg font-semibold">
+          People alive at this time
+        </h2>
 
         {relatedPersons.length === 0 ? (
           <p>No related persons.</p>
@@ -43,49 +40,14 @@ const relatedDocuments = getDocumentsForEvent(event.id);
           <ul className="list-disc list-inside">
             {relatedPersons.map((p) => (
               <li key={p.id}>
-                <a href={`/persons/${p.id}`} className="underline">
+                <Link href={`/persons/${p.id}`} className="underline">
                   {p.name}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
         )}
       </section>
-
-      
-{relatedDocuments.length > 0 && (
-  <section className="space-y-2">
-    <h2 className="text-lg font-semibold">Documents</h2>
-
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-      {relatedDocuments.map((doc) => (
-        <Link
-          key={doc.id}
-          href={`/documents/${doc.id}`}
-          className="block border p-2"
-        >
-          {doc.display === "EMBED" && (
-            <img
-              src={doc.url}
-              alt={doc.title}
-              className="w-full h-32 object-cover"
-            />
-          )}
-
-          <h3 className="mt-2 text-sm font-semibold">
-            {doc.title}
-          </h3>
-
-          <p className="text-xs text-gray-600">
-            {doc.description}
-          </p>
-        </Link>
-      ))}
-    </div>
-  </section>
-)}
-
-      
     </div>
   );
 }
