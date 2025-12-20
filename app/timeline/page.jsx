@@ -1,7 +1,3 @@
-
-
-
-
 import {
   getAllPersons,
   getAllEvents,
@@ -10,19 +6,19 @@ import {
 
 import TimelineGlobal from "@/components/Timeline/TimelineGlobal"
 
-const personsList = getAllPersons()
-const eventsList = getAllEvents()
-const documentsList = getDocumentsForTimeline()
+export default async function TimelinePage() {
+  const personsList = await getAllPersons()
+  const eventsList = await getAllEvents()
+  const documentsList = await getDocumentsForTimeline()
 
-export default function TimelinePage() {
   return (
     <div className="p-4">
       <h1 className="text-xl mb-4">Timeline</h1>
       <TimelineGlobal
-  persons={personsList}
-  events={eventsList}
-  documents={documentsList}
-/>
+        persons={personsList}
+        events={eventsList}
+        documents={documentsList}
+      />
     </div>
   )
 }

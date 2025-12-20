@@ -1,7 +1,16 @@
-import documents from "@/data/document.json"
-import Link from "next/link"
+import Link from "next/link";
 
-export default function DocumentsPage() {
+async function getDocuments() {
+  const res = await fetch("http://localhost:3000/api/documents", {
+    cache: "no-store",
+  });
+
+  return res.json();
+}
+
+export default async function DocumentsPage() {
+  const documents = await getDocuments();
+
   return (
     <main className="p-6 space-y-6">
       <h1 className="text-2xl font-bold">Documents</h1>
@@ -11,15 +20,17 @@ export default function DocumentsPage() {
           <Link
             key={doc.id}
             href={`/documents/${doc.id}`}
-            className="block border p-2 hover:bg-gray-50"
+            className="block border p-2 hover:bg-gray-50 rounded"
           >
-            {/* IMAGE PREVIEW */}
-            {doc.display === "EMBED" && (
-              <img
-                src={doc.url}
-                alt={doc.title}
-                className="w-full h-40 object-cover"
-              />
+            {/* PREVIEW */}
+            {doc.display === "EMBED" && doc.url && (
+              <div className="w-full h-40 bg-gray-100 overflow-hidden rounded">
+                <iframe
+                  src={doc.url}
+                  className="w-full h-full"
+                  loading="lazy"
+                />
+              </div>
             )}
 
             {/* TITLE */}
@@ -27,13 +38,15 @@ export default function DocumentsPage() {
               {doc.title}
             </h2>
 
-            {/* DESCRIPTION (short) */}
-            <p className="text-xs text-gray-600">
-              {doc.description}
-            </p>
+            {/* DESCRIPTION */}
+            {doc.description && (
+              <p className="text-xs text-gray-600 line-clamp-3">
+                {doc.description}
+              </p>
+            )}
           </Link>
         ))}
       </div>
     </main>
-  )
+  );
 }

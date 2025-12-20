@@ -9,8 +9,12 @@ import TimelinePerson from "@/components/Timeline/TimelinePerson";
 import Link from "next/link";
 
 export default async function PersonPage({ params }) {
-  let { id } = await params;
+  let { id } = params;
+  
   const person = getPersonById(id);
+  if (!person) {
+  return <div className="p-4">Person not found</div>;
+}
 
   const relatedDocuments = getDocumentsForPerson(person.id);
 
