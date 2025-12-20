@@ -1,32 +1,47 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { useEffect, useState } from "react"
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function Page() {
-  const [moments, setMoments] = useState([])
+  const [moments, setMoments] = useState([]);
+  const [personsMap, setPersonsMap] = useState({});
 
   // fetch moments depuis l'API
   const fetchMoments = async () => {
-    const res = await fetch("/api/moments")
-    const data = await res.json()
-    setMoments(data)
-  }
+    const res = await fetch("/api/moments");
+    const data = await res.json();
+    setMoments(data);
+  };
+
+  // fetch persons depuis l'API
+  const fetchPersons = async () => {
+    const res = await fetch("/api/persons");
+    const data = await res.json();
+
+    const map = {};
+    data.forEach((p) => {
+      map[p.id] = p.name;
+    });
+
+    setPersonsMap(map);
+  };
 
   useEffect(() => {
-    fetchMoments()
-  }, [])
+    fetchPersons();
+    fetchMoments();
+  }, []);
 
   // delete moment
   const handleDelete = async (id) => {
-    if (!confirm("Delete this moment?")) return
+    if (!confirm("Delete this moment?")) return;
     await fetch("/api/moments", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id }),
-    })
-    fetchMoments()
-  }
+    });
+    fetchMoments();
+  };
 
   return (
     <main className="max-w-4xl mx-auto p-6 space-y-8">
@@ -47,9 +62,11 @@ export default function Page() {
         {moments.map((p) => (
           <div key={p.id} className="p-4 flex justify-between items-center">
             <div>
-              <p className="font-medium">{p.personId}</p>
+              <p className="font-medium">
+                {personsMap[p.personId] ?? "Unknown person"}
+              </p>
               <p className="text-sm text-gray-500">
-                {p.date}  {p.label ?? "—"}
+                {p.date} {p.label ?? "—"}
               </p>
             </div>
 
@@ -71,5 +88,5 @@ export default function Page() {
         ))}
       </section>
     </main>
-  )
+  );
 }
