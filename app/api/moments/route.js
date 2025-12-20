@@ -1,19 +1,45 @@
 import { NextResponse } from "next/server"
-import { getAllMoments, createMoment, updateMoment, deleteMoment, getMomentById } from "@/lib/admin/moments"
+import {
+  getAllMoments,
+  createMoment,
+  updateMoment,
+  deleteMoment
+} from "@/lib/admin/moments"
+
+import { getAllPersons } from "@/lib/admin/persons"
 
 export async function GET(request) {
-  const { searchParams } = new URL(request.url);
-  const id = searchParams.get("id");
+  const { searchParams } = new URL(request.url)
+  const id = searchParams.get("id")
 
-  if (id) {
-    const moment = getMomentById(id);
-    return NextResponse.json(moment ?? null);
+  const persons = getAllPersons()
+  const personIds = new Set(persons.map((p) => p.id))
+
+  const moments = getAllMoments()
+
+  // nettoyage des moments orphelins
+  const validMoments = []
+  const orphanMoments = []
+
+  for (const m of moments) {
+    if (personIds.has(m.personId)) {
+      validMoments.push(m)
+    } else {
+      orphanMoments.push(m)
+    }
   }
 
-  const moments = getAllMoments();
-  return NextResponse.json(moments);
-}
+  // suppression définitive
+  orphanMoments.forEach((m) => deleteMoment(m.id))
 
+  // GET by id
+  if (id) {
+    const moment = validMoments.find((m) => m.id === id)
+    return NextResponse.json(moment ?? null)
+  }
+
+  return NextResponse.json(validMoments)
+}
 
 export async function POST(req) {
   const body = await req.json()
@@ -32,3 +58,4 @@ export async function DELETE(req) {
   deleteMoment(id)
   return NextResponse.json({ success: true })
 }
+

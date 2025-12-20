@@ -29,7 +29,7 @@ export default function NewMomentPage() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        id: "p" + Date.now(),
+        id: "m" + Date.now(),
         personId,
         date,
         label: label || null,
